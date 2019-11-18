@@ -39,6 +39,7 @@ function draw(x, y) {
 function mouseClicked() {
   updateline(mouseX,mouseY);
   console.log(mouseX);
+  console.log("Hej Philip");
 //  draw(mouseX, mouseY);
   // prevent default
   return false;
