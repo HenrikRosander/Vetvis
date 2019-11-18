@@ -2,7 +2,7 @@ function setup(){
   createCanvas(600,400);
   c1 =  color(0,0,255);
   c2 = color(130,20,180,230);
-
+let clicks = 0;
   pos1=height/7;
   let stepArray = [pos1, 114, 171, 228, 285, 400];
   // pos = [0, 0, 0, 0, 0, 0, 0];
@@ -37,9 +37,15 @@ function draw(x, y) {
 }
 
 function mouseClicked() {
+  if (clicks == 5){
+
+  }
+  else{
   updateline(mouseX,mouseY);
   console.log(mouseX);
   console.log("Hej Philip");
+  clicks++;}
+
 //  draw(mouseX, mouseY);
   // prevent default
   return false;
