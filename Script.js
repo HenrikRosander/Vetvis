@@ -1,18 +1,11 @@
+var clicks = 0;
 function setup(){
   createCanvas(600,400);
   c1 =  color(0,0,255);
   c2 = color(130,20,180,230);
-let clicks = 0;
+
   pos1=height/7;
   let stepArray = [pos1, 114, 171, 228, 285, 400];
-  // pos = [0, 0, 0, 0, 0, 0, 0];
-  //
-  // for (let i = 1; i < 8; i++){
-  //   pos[i] = i*400/7;
-  //   console.log(pos[i]);
-  // }
-  //   let stepArray = [pos[0], pos[1], pos[2], pos[3], pos[4], pos[5], 400];
-
   setGradient(c1,c2,stepArray);
 }
 
