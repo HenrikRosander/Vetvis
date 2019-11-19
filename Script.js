@@ -30,10 +30,13 @@ function draw(x, y) {
 }
 
 function mouseClicked() {
-  if (clicks == 5){
+  // TODO: Check in an arbritrary range of mouseX and mouseY to make sure we are not pressing the point already added
+  //If so, we want to open an interface where we can modify it.
+  if (clicks == 4){
 
   }
   else{
+
   updateline(mouseX,mouseY);
   console.log(mouseX);
   console.log("Hej Philip");
@@ -44,6 +47,7 @@ function mouseClicked() {
   return false;
 }
 function updateline(a,b){
+  // TODO: Updateline should make a new line with a maximum of five points.
   b = b - 400;
   line(0,0,a,b);
   line(a,b,600,0);
@@ -52,7 +56,7 @@ function updateline(a,b){
   strokeWeight(6);
 }
 function setGradient(c1, c2, stepArray) {
-  // noprotect
+  // TODO: Fix the gradient with fixed background, keep the canvas size
   noFill();
 
   for (let i = 0; i < 5; i++){
