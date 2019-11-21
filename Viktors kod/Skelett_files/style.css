@@ -1,0 +1,41 @@
+/* body {
+    display:flex;
+    justify-content:space-around;
+} */
+
+.container{
+  content: "";
+  display: table;
+  clear: both;
+}
+.row1{
+  width:100%;
+  height: 500px;
+}
+.row2{
+  width:100%;
+    height: 500px;
+}
+#col1{
+  float:left;
+}
+#col2{
+  width = 50%;
+  float:right;
+}
+/* .basic{
+  width:40%;
+  float:left;
+}
+.mods{
+  width:40%;
+  float:right;
+} */
+table{
+  width:100%;
+}
+th {
+  width:33%;
+  text-align:left;
+  vertical-align: top;
+}
