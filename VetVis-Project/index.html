@@ -5,7 +5,7 @@
   use vector and matrix maths operations.  Source: https://github.com/toji/gl-matrix
 -->
 <script type="text/javascript" src="gl-matrix.js"></script>
-
+<script src="p5.js"></script>
 <!-- Main WebGL functions -->
 <script type="text/javascript">
 
@@ -279,12 +279,10 @@ const volumeRenderingFragmentSource = `#version 300 es
           const float ReferenceSamplingInterval = 150.0;
           color.a = 1.0 - pow(1.0 - color.a, tIncr * ReferenceSamplingInterval);
 
+
           result.r = (1.0 - result.a) * color.r * color.a + result.r;
-
           result.g = (1.0 - result.a) * color.g * color.a + result.g;
-
           result.b = (1.0 - result.a) * color.b * color.a + result.b;
-
           result.a = (1.0 - result.a) * color.a + result.a;
 
         }
@@ -298,8 +296,6 @@ const volumeRenderingFragmentSource = `#version 300 es
 
         }
         else if (compositingMethod == CompositingMethodMaximumIntensityProjection) {
-
-
           if(color.a > result.a)
           {
               result = color;
@@ -466,8 +462,6 @@ function updateTransferFunction(gl, transferFunction) {
   // function.  Each value is stored sequentially (RGBA,RGBA,RGBA,...) for 256 values,
   // which get mapped to [0, 1] by OpenGL
   let data = new Uint8Array(256 * 4);
-
-
   ////////////////////////////////////////////////////////////////////////////////////////
   /// Beginning of the provided transfer function
 
@@ -475,26 +469,49 @@ function updateTransferFunction(gl, transferFunction) {
   // relatively simple ramp with the first 50 values being set to 0 to reduce the noise in
   // the image.  The remainder of the ramp is just using different angles for the color
   // components
-  const cutoff = 30;
+  let span = [];
 
-  for (let i = 0; i < cutoff * 4; i += 4) {
-    // Set RGBA all to 0
-    data[i] = 0;
-    data[i + 1] = 0;
-    data[i + 2] = 0;
-    data[i + 3] = 0;
+  console.log(counter);
+  console.log(mouseX + " and " + mouseY);
+
+  for (let i = 50*4; i < 80 * 4; i += 4) {
+    data[i] = i/4;
+    data[i + 1] = i/4;
+    data[i + 2] = i/4;
+    data[i + 3] = i / 8;
   }
-
   // For now, just create a linear ramp from 0 to 1. We start at the cutoff value and fill
   // the rest of the array
-  for (let i = cutoff * 4; i < 256 * 4; i += 4) {
-    // convert i into a value [0, 256] and set it
+
+  if(mouseX > 0.0 && mouseX < 600.0 && mouseY > 0.0 && mouseY < 400.0)
+  {
+    span.push([mouseX, mouseY]);
+     if( counter == 1 )
+     {
+
+       console.log(span[0][1]);
+     }
+     else if(counter === 2)
+     {
+       // span.push([mouseX, mouseY]);
+       console.log(span[1][1], "HEJHEJ");
+
+       for (let i = (span[0][0]/255) * 4; i < (span[1][0]) * 4; i += 4) {
+      // convert i into a value [0, 256] and set it
     const it = i / 4;
-    data[i] = 2 * it;
-    data[i + 1] = it;
-    data[i + 2] = 3 * it;
-    data[i + 3] = it;
+
+        data[i] = i * it;
+
+        data[i + 1] = i * it;
+
+        data[i + 2] = i * it;
+
+        data[i + 3] = i * it;
+
   }
+}
+}
+
 
   /// End of the provided transfer function
   ////////////////////////////////////////////////////////////////////////////////////////
@@ -507,6 +524,38 @@ function updateTransferFunction(gl, transferFunction) {
   gl.bindTexture(gl.TEXTURE_2D, transferFunction);
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 256, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, data);
 }
+
+
+//==========================Create the canvas========================
+function setup() {
+  //Canvas for transferFunction
+
+  let cnv = createCanvas(600, 400);
+  cnv.position(655, 15);
+  background(153);
+  stroke('black');
+  strokeWeight(2);
+  line(0, width, 0, 0);
+  line(width, height, -width, height);
+
+}
+
+//========================================On click function==============
+function mouseClicked() {
+
+
+
+  stroke('purple');
+  strokeWeight(10); // Make the points 10 pixels in size
+  point(mouseX, mouseY);
+
+  mouseY = abs(400-mouseY);
+  console.log(mouseX, mouseY);
+  counter++;
+  triggerTransferFunctionUpdate();
+}
+
+
 
 
 
@@ -695,7 +744,14 @@ function renderVolume(gl, program, volumeTexture, entryTexture, exitTexture,
 /// loading of the assets and trigger the render loop that will continuously update the
 /// rendering.  This function is marked as async as our 'fetch' request to get the volume
 /// data requires this.
+
+//Counter
+var counter = 0;
+
 async function main() {
+
+
+
   // Get the canvas object from the main document
   let canvas = document.querySelector("#glCanvas");
 
@@ -969,6 +1025,16 @@ async function main() {
   // Request the first frame, thus starting the render loop
   console.log(116, "Trigger the initial rendering");
   requestAnimationFrame(internalRender);
+
+  //while(true)
+
+    if(counter % 2.0 == 0.0)
+    {
+      updateTransferFunction(gl, transferFunctionTexture);
+      console.log("IM IN HERE");
+      requestAnimationFrame(internalRender);
+    }
+
 }
 
 // This function has to be called in order to trigger a rerender.  Otherwise, we would
