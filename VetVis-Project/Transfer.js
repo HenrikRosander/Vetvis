@@ -39,7 +39,7 @@ function updateTransferFunction(gl, transferFunction) {
 
     for (let i = Math.floor(points[1][0]*1024.0/600.0); i < Math.floor(points[2][0]*1024.0/600.0); i += Math.floor(1024.0/600.0)) {
 
-      console.log(i);
+      //console.log(i);
 
       data[i] = i/4;
       data[i + 1] = i/4;
@@ -113,11 +113,11 @@ function mouseDragged() {
 }
 
 //========================================updateline ==============
-function updateline(x_Chord,y_Chord){
+function updateline(x_Chord,y_Chord,c){
         //y_Chord = y_Chord+400;
         if(mouseX > 0.0 && mouseX < 600.0 && mouseY > 0.0 && mouseY < 400.0)
         {
-          points.push([x_Chord, y_Chord]);
+          points.push([x_Chord, y_Chord,c]);
           points = points.sort(function(a,b){ //sort the points
           return(a[0] > b[0] ? 1:-1);
           });
@@ -126,8 +126,8 @@ function updateline(x_Chord,y_Chord){
             stroke(255,0,0);
             noSmooth();
             strokeWeight(6);
-            line(0,400,points[0][0],points[0][1]);
-            line(points[0][0],points[0][1],600,400);
+            line(points[0][0],400,points[0][0],points[0][1]);
+            line(points[0][0],points[0][1],points[0][0],400);
           }
           if (clicks  >= 1) { //clears the canvas
             clear();
@@ -141,11 +141,11 @@ function updateline(x_Chord,y_Chord){
             stroke(255,0,0);
             noSmooth();
             strokeWeight(6);
-            line(0,400,points[0][0],points[0][1]);
+            line(points[0][0],400,points[0][0],points[0][1]);
             for (let i = 0; i < points.length-1; i++) {
               line(points[i][0], points[i][1], points[i+1][0],points[i+1][1]);
             }
-            line(points[points.length-1][0],points[points.length-1][1], 600,400);
+            line(points[points.length-1][0],points[points.length-1][1], points[points.length-1][0],400);
 
               // div2 = createDiv(line(0,0,dummy[0],dummy[1]), line(dummy[0],dummy[1], dummy[2],dummy[3]),line(dummy[2],dummy[3], dummy[4],dummy[5]),line( dummy[4],dummy[5], 600,0));
               // div2.remove();
