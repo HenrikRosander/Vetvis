@@ -31,13 +31,13 @@ function updateTransferFunction(gl, transferFunction) {
   }
 
 
-  if(points.length > 2)
+  for(let j = 0; j < points.length-1; j++)
   {
     console.log(points.length);
     //console.log(points[1],points[2]);
-    console.log(Math.floor(points[1][0]*1024.0/600.0), Math.floor(points[2][0]*1024.0/600.0));
+    console.log(Math.floor(points[j][0]*1024.0/600.0), Math.floor(points[j+1][0]*1024.0/600.0));
 
-    for (let i = Math.floor(points[1][0]*1024.0/600.0); i < Math.floor(points[2][0]*1024.0/600.0); i += Math.floor(1024.0/600.0)) {
+    for (let i = Math.floor(points[j][0]*1024.0/600.0); i < Math.floor(points[j+1][0]*1024.0/600.0); i += Math.floor(1024.0/600.0)) {
 
       //console.log(i);
 
@@ -46,6 +46,7 @@ function updateTransferFunction(gl, transferFunction) {
       data[i + 2] = i/4;
       data[i + 3] = 155;
     }
+
   }
 
 
