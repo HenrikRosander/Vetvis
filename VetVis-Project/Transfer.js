@@ -2,6 +2,8 @@
 
 let clicks = 0;
 let points = [];
+let xstep = 1024.0/600.0;
+let ystep = 1024.0/400.0;
 
 function updateTransferFunction(gl, transferFunction) {
   // Create a new array that holds the values for the transfer function.  The width of 256
@@ -35,9 +37,9 @@ function updateTransferFunction(gl, transferFunction) {
   {
     console.log(points.length);
     //console.log(points[1],points[2]);
-    console.log(Math.floor(points[j][0]*1024.0/600.0), Math.floor(points[j+1][0]*1024.0/600.0));
+    console.log(Math.floor(points[j][0]*xstep), Math.floor(points[j+1][0]*xstep));
 
-    for (let i = Math.floor(points[j][0]*1024.0/600.0); i < Math.floor(points[j+1][0]*1024.0/600.0); i += Math.floor(1024.0/600.0)) {
+    for (let i = Math.floor(points[j][0]*xstep); i < Math.floor(points[j+1][0]*xstep); i += Math.floor(xstep)) {
 
       //console.log(i);
 
