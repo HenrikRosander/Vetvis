@@ -1,0 +1,16 @@
+@@TODO: Skriva mouseclicked If-sats ifall utanför område.
+
+0,400
+
+y = y-400;
+
+-> Koord 0,0
+
+//Canvas på 600,400 -> 400/255; mouseX/255; mouseY/255; 
+//Hur mkt ett steg är i opacitet och intensitet (både är max 255)
+
+temp = 0;
+for (let i = 1; i < 400; i++) 
+temp = i/255;
+//Goal mouseY / 255;
+if (temp >= mouseY / 255) break;

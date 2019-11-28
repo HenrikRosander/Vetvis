@@ -1,0 +1,178 @@
+function drawGraph(data,points){
+
+//delete
+
+// d3.select("svg").remove();
+
+
+let r = data[0];
+let g = data[1];
+let b = data[2];
+let a = data[3];
+
+let colors = [];
+
+for (var i = 0; i < r.length; i++) {
+  colors.push(d3.rgb(data[0][i],data[1][i],data[2][i]));
+
+}
+
+var margin = {top: 50, right: 70, bottom: 60, left: 60},
+    width = 700,
+    height = 400;
+
+// append the svg object to the body of the page
+
+
+
+
+var x = d3.scaleLinear()
+  .domain([0,r.length])
+  .nice()
+  .range([margin.left, width - margin.left - margin.right ]);
+
+// Add Y axis
+var y = d3.scaleLinear()
+  .domain([0, 255])
+  .nice()
+  .range([height - margin.bottom, margin.top ]);
+
+var svg = d3.select("#vis1 svg");
+svg.selectAll("circle")
+  .remove();
+
+svg.selectAll("path").remove();
+
+svg.selectAll("rect").remove();
+
+
+      svg.on("click", function(){
+        var coords = d3.mouse(this);
+        var newData= {
+                  x: Math.round( x.invert(coords[0])),  // Takes the pixel number to convert to number
+                  y: Math.round( y.invert(coords[1]))
+                };
+        if(newData.x >= 0 && newData.y >=0 && newData.x <= 255 && newData.y <= 255 && document.querySelector('input[name="debug-method"]:checked').value == "add"){
+          //TODO: create a div with id_point_number with inputs for rgb values.
+          addPoints(newData.x,newData.y, [document.getElementById("pick-red").value,document.getElementById("pick-green").value,document.getElementById("pick-blue").value]);
+        }
+      });
+
+
+  svg.append("g")
+  	.attr("class", "x axis")
+    .attr("transform", "translate(0," + (height - margin.bottom) + ")")
+    .call(d3.axisBottom(x));
+
+  svg.append("g")
+  	.attr("class", "y axis")
+    .attr("transform", "translate(" +  margin.left + ",0)")
+    .call(d3.axisLeft(y));
+
+  svg.selectAll("rect")
+    .data(colors)
+    .enter()
+    .append("rect")
+    .attr("x", function(d,i){
+
+      return x(i);
+    })
+    .attr("y",height-margin.bottom+20)
+    .attr("width", (width - margin.left-margin.right)/colors.length)
+    .attr("height", 40)
+    .style("fill",function(d){
+      return d;
+      });
+
+
+
+    // Add the line
+    svg.append("path")
+      .datum(a)
+      .attr("fill", "none")
+      .attr("stroke", "steelblue")
+      .attr("stroke-width", 4)
+      .attr("d", d3.line()
+        .x(function(d,i) { return x(i); })
+        .y(function(d) { return y(d); })
+
+      );
+
+    svg.selectAll("circles")
+      .data(points)
+      .enter()
+      .append("circle")
+      .attr("id", function(d,i){return i;})
+      .attr("cx", function(d) {
+        return x(d[0]);})
+      .attr("cy", function(d) {return y(d[1]);})
+      .attr("r", 8)
+      .style("fill", function(d){
+        let col = d3.rgb(d[2][0], d[2][1],d[2][2]);
+        return col;})
+      .on("mouseover", function(){
+        if(document.querySelector('input[name="debug-method"]:checked').value == "edit"){
+        let sel = d3.select(this).raise()
+          .transition()
+          .attr('r', 20);
+        }
+      })
+      .on("mouseout", function(){
+        d3.select(this)
+          .transition()
+          .attr('r', 8);
+      })
+      .on("click", function(){
+        if(document.querySelector('input[name="debug-method"]:checked').value == "edit"){
+        changeColor(this.id);
+      }
+      })
+      .call(d3.drag()
+      .on("start", dragstarted)
+      .on("drag", dragged)
+      .on("end", dragended)
+      );
+
+
+        function dragstarted(d) {
+            d3.select(this).raise().classed("active", true);
+        }
+
+        function dragged(d) {
+          let id = this.id;
+
+            d3.select(this).attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y);
+            addPoints2(id,Math.round( x.invert(d3.event.x)),Math.round( y.invert(d3.event.y)), [points[id][2][0],points[id][2][1],points[id][2][2]]);
+        }
+
+        function dragended(d) {
+          let x,y;
+            d3.select(this, function(d){console.log(d3.event.x);}).classed("active", false);
+
+        }
+
+
+  svg.append("text")
+    .text('Value')
+    .attr("text-anchor", "middle")
+    .attr("class", "graph-title")
+    .style("fill","black")
+    .style("font-size", 20)
+    .attr("y", height-margin.bottom +40)
+    .attr("x", width-margin.left-margin.right + 15);
+
+    svg.append("text")
+    .attr("class", "label")
+    .attr("y", 15)
+    .attr("x",2*(-height/3)+10)
+    .attr("transform", "rotate(-90)")
+    .attr("dy", ".71em")
+    .style("font-size", "20")
+    .style("fill", "black")
+    .text("Opacity");
+
+
+
+
+
+}
