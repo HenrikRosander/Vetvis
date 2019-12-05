@@ -11,7 +11,6 @@ let b = 0;
 
 let input, button, greeting;
 
-
 function updateTransferFunction(gl, transferFunction) {
   // Create a new array that holds the values for the transfer function.  The width of 256
   // is also hard-coded further down where the transferFunctionTexture OpenGL object is
@@ -58,11 +57,11 @@ function updateTransferFunction(gl, transferFunction) {
       if(i % 4 == 2){pos = 2;}
       if(i % 4 == 3){pos = 1;}
 
-      data[pos + i] = r*i/77; // R
-      data[pos + i + 1] = g*i/77; // G
-      data[pos + i + 2] = b*i/77; // B
+      data[pos + i] = r*i/Math.floor(xval_next*xstep); // R
+      data[pos + i + 1] = g*i/ Math.floor(xval_next*xstep); // G
+      data[pos + i + 2] = b*i/ Math.floor(xval_next*xstep); // B
 
-      console.log(r*i/77, g*i/77, b*i/77);
+      console.log(data[pos + i], data[pos + i + 1], data[pos + i + 2] );
 
       if(yval < yval_next) // Om nästa punkt har högre yvärde
       {
@@ -80,8 +79,6 @@ function updateTransferFunction(gl, transferFunction) {
       }
     }
   }
-
-
 
 
   /// End of the provided transfer function
@@ -112,8 +109,6 @@ function setup() {
 
 //===================Create the input/button canvas=========================
 // create canvas
-createCanvas(400, 400);
-
 input = createInput();
 input.position(800, 450);
 
@@ -130,12 +125,13 @@ button.mousePressed(greet);
 
 function greet() {
 
-  r = input.value().slice(0,2);
-  g = input.value().slice(4,6);
-  b = input.value().slice(8,10);
+  let color_ = input.value().split(" ");
+  r = color_[0];
+  g = color_[1];
+  b = color_[2];
 
   triggerTransferFunctionUpdate();
-  console.log(r);
+  console.log(r,g,b);
 
 }
 
