@@ -5,6 +5,12 @@ let points = [];
 let xstep = 256*4/600.0;
 let ystep = 255.0/400.0;
 
+let r = 0;
+let g = 0;
+let b = 0;
+
+let input, button, greeting;
+
 
 function updateTransferFunction(gl, transferFunction) {
   // Create a new array that holds the values for the transfer function.  The width of 256
@@ -52,9 +58,11 @@ function updateTransferFunction(gl, transferFunction) {
       if(i % 4 == 2){pos = 2;}
       if(i % 4 == 3){pos = 1;}
 
-      data[pos + i] = i / 4; // R
-      data[pos + i + 1] = 0; // G
-      data[pos + i + 2] = 0; // B
+      data[pos + i] = r*i/77; // R
+      data[pos + i + 1] = g*i/77; // G
+      data[pos + i + 2] = b*i/77; // B
+
+      console.log(r*i/77, g*i/77, b*i/77);
 
       if(yval < yval_next) // Om nästa punkt har högre yvärde
       {
@@ -69,8 +77,6 @@ function updateTransferFunction(gl, transferFunction) {
       else // Om de har samma y-värde
       {
         data[pos + i + 3] = k * ystep;
-        console.log("k value", k);
-        console.log("data", data[pos + i + 3]);
       }
     }
   }
@@ -102,6 +108,34 @@ function setup() {
   strokeWeight(2);
   line(0, width, 0, 0);
   line(width, height, -width, height);
+
+
+//===================Create the input/button canvas=========================
+// create canvas
+createCanvas(400, 400);
+
+input = createInput();
+input.position(800, 450);
+
+button = createButton('submit');
+button.position(input.x + input.width, 450);
+button.mousePressed(greet);
+
+//greeting = createElement('h2', 'what is your name?');
+//greeting.position(600, 440);
+
+//textAlign(CENTER);
+//textSize(50);
+}
+
+function greet() {
+
+  r = input.value().slice(0,2);
+  g = input.value().slice(4,6);
+  b = input.value().slice(8,10);
+
+  triggerTransferFunctionUpdate();
+  console.log(r);
 
 }
 
