@@ -9,7 +9,7 @@ let r = 0;
 let g = 0;
 let b = 0;
 
-let input, button, greeting;
+let input, button, greeting, reset;
 
 function updateTransferFunction(gl, transferFunction) {
   // Create a new array that holds the values for the transfer function.  The width of 256
@@ -136,6 +136,21 @@ function greet() {
 }
 function keyPressed(){
   if(keyCode === ENTER){greet();}
+  if(keyCode === ESCAPE){resetCanvas();}
+}
+function resetCanvas(){
+  points = [];
+  clicks = 0;
+  r = 0; g = 0; b = 0;
+  clear();
+  let cnv = createCanvas(600, 400);
+  cnv.position(655, 15);
+  background(153);
+  stroke('black');
+  strokeWeight(2);
+  line(0, width, 0, 0);
+  line(width, height, -width, height);
+  triggerTransferFunctionUpdate();
 }
 
 //========================================On click function==============
