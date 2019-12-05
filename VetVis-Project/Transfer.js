@@ -134,6 +134,9 @@ function greet() {
   console.log(r,g,b);
 
 }
+function keyPressed(){
+  if(keyCode === ENTER){greet();}
+}
 
 //========================================On click function==============
 function mouseClicked() {
@@ -185,6 +188,10 @@ function updateline(x_Chord,y_Chord,c){
             strokeWeight(6);
             line(points[0][0],400,points[0][0],points[0][1]);
             line(points[0][0],points[0][1],points[0][0],400);
+            stroke('purple');
+            strokeWeight(10);
+
+            point(points[0][0],points[0][1]);
           }
           if (clicks  >= 1) { //clears the canvas
             clear();
@@ -199,16 +206,29 @@ function updateline(x_Chord,y_Chord,c){
             noSmooth();
             strokeWeight(6);
             line(points[0][0],400,points[0][0],points[0][1]);
+
             for (let i = 0; i < points.length-1; i++) {
-              line(points[i][0], points[i][1], points[i+1][0],points[i+1][1]);
+              stroke(255,0,0);
+              noSmooth();
+              strokeWeight(6);
+              let k1 = line(points[i][0], points[i][1], points[i+1][0],points[i+1][1]);
+              stroke('purple');
+              strokeWeight(10);
+              let k2 = point(points[i][0], points[i][1]);
+
             }
+            stroke(255,0,0);
+            noSmooth();
+            strokeWeight(6);
             line(points[points.length-1][0],points[points.length-1][1], points[points.length-1][0],400);
+            stroke('purple');
+            strokeWeight(10);
+            let k2 = point(points[points.length-1][0],points[points.length-1][1]);
+
 
               // div2 = createDiv(line(0,0,dummy[0],dummy[1]), line(dummy[0],dummy[1], dummy[2],dummy[3]),line(dummy[2],dummy[3], dummy[4],dummy[5]),line( dummy[4],dummy[5], 600,0));
               // div2.remove();
             }
-            stroke(0,255,0);
-            noSmooth();
-            strokeWeight(6);
+
           }
 }
