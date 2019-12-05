@@ -2,8 +2,9 @@
 
 let clicks = 0;
 let points = [];
-let xstep = 1024.0/600.0;
-let ystep = 1024.0/400.0;
+let xstep = 256*4/600.0;
+let ystep = 255.0/400.0;
+
 
 function updateTransferFunction(gl, transferFunction) {
   // Create a new array that holds the values for the transfer function.  The width of 256
@@ -32,23 +33,46 @@ function updateTransferFunction(gl, transferFunction) {
     data[i + 3] = 0;
   }
 
+  let alpha = 0;
 
   for(let j = 0; j < points.length-1; j++)
   {
-    console.log(points.length);
-    //console.log(points[1],points[2]);
-    console.log(Math.floor(points[j][0]*xstep), Math.floor(points[j+1][0]*xstep));
+    let yval = Math.abs(400-points[j][1]); // Få rätt värde på y eftersom det börjar på 400 i origo
+    let yval_next = Math.abs(400-points[j+1][1]);
+    let xval = points[j][0];
+    let xval_next = points[j+1][0];
+    let k = yval; // Lutning av y
+    let inc = Math.abs(yval-yval_next)/Math.floor(255/600*(xval_next-xval)); // hur mycket y ska incrementeras (beror på lutningen)
+    let pos = 0;
 
-    for (let i = Math.floor(points[j][0]*xstep); i < Math.floor(points[j+1][0]*xstep); i += Math.floor(xstep)) {
+    for (let i = Math.floor(xval*xstep); i < Math.floor(xval_next*xstep); i += 4)
+    {
+      if(i % 4 == 0){pos = 0;}
+      if(i % 4 == 1){pos = 3;}
+      if(i % 4 == 2){pos = 2;}
+      if(i % 4 == 3){pos = 1;}
 
-      //console.log(i);
+      data[pos + i] = i / 4; // R
+      data[pos + i + 1] = 0; // G
+      data[pos + i + 2] = 0; // B
 
-      data[i] = i/4;
-      data[i + 1] = i/4;
-      data[i + 2] = i/4;
-      data[i + 3] = 155;
+      if(yval < yval_next) // Om nästa punkt har högre yvärde
+      {
+        data[pos + i + 3] = k * ystep; // Alpha
+        k += inc;
+      }
+      else if(yval > yval_next) // Om nästa punkt har lägre
+      {
+        data[pos + i + 3] = k * ystep;
+        k -= inc;
+      }
+      else // Om de har samma y-värde
+      {
+        data[pos + i + 3] = k * ystep;
+        console.log("k value", k);
+        console.log("data", data[pos + i + 3]);
+      }
     }
-
   }
 
 
