@@ -9,77 +9,67 @@ let r = 0;
 let g = 0;
 let b = 0;
 
-let input, button, greeting, reset;
+let input, button, greeting, reset, start_point;
+let data = new Uint8Array(256 * 4);
+let currentColor = [0,0,0];
 
 function updateTransferFunction(gl, transferFunction) {
-  // Create a new array that holds the values for the transfer function.  The width of 256
-  // is also hard-coded further down where the transferFunctionTexture OpenGL object is
-  // created, so if you want to change it here, you have to change it there as well.  We
-  // multiply the value by 4 as we have RGBA for each pixel.
-  // Also we created the transfer function texture using the UNSIGNED_BYTE type, which
-  // means that every value in the transfer function has to be between [0, 255]
 
-  // This data should, at the end of your code, contain the information for the transfer
-  // function.  Each value is stored sequentially (RGBA,RGBA,RGBA,...) for 256 values,
-  // which get mapped to [0, 1] by OpenGL
-  let data = new Uint8Array(256 * 4);
-  ////////////////////////////////////////////////////////////////////////////////////////
-  /// Beginning of the provided transfer function
-
-  // The provided transfer function that you'll replace with your own solution is a
-  // relatively simple ramp with the first 50 values being set to 0 to reduce the noise in
-  // the image.  The remainder of the ramp is just using different angles for the color
-  // components
-
-  for (let i = 1*4+50; i < 256 * 4; i += 4) {
-    data[i] = 0;
-    data[i + 1] = 0;
-    data[i + 2] = 0;
-    data[i + 3] = 0;
-  }
-
-  let alpha = 0;
-
-  for(let j = 0; j < points.length-1; j++)
+if(start_point.value() <= points.length)
+{
+  for(let j = 1; j < points.length; j++)
   {
-    let yval = Math.abs(400-points[j][1]); // Få rätt värde på y eftersom det börjar på 400 i origo
-    let yval_next = Math.abs(400-points[j+1][1]);
-    let xval = points[j][0];
-    let xval_next = points[j+1][0];
+    let yval = Math.abs(400-points[j-1][1]); // Få rätt värde på y eftersom det börjar på 400 i origo
+    let yval_next = Math.abs(400-points[j][1]);
+    let xval = points[j-1][0];
+    let xval_next = points[j][0];
     let k = yval; // Lutning av y
     let inc = Math.abs(yval-yval_next)/Math.floor(255/600*(xval_next-xval)); // hur mycket y ska incrementeras (beror på lutningen)
     let pos = 0;
 
-    for (let i = Math.floor(xval*xstep); i < Math.floor(xval_next*xstep); i += 4)
+    // let x_start = Math.floor(xval*xstep);
+    // let x_end = Math.floor(xval_next*xstep);
+    //let last_point = Math.floor(points[points.length-1][0] * xstep);
+    //
+    // if(x_start % 4 == 0){pos = 0;} // För att kompensera på vart man börjar
+    // if(x_start % 4 == 1){pos = 3;}
+    // if(x_start % 4 == 2){pos = 2;}
+    // if(x_start % 4 == 3){pos = 1;}
+
+
+    let x_start = Math.floor(255*(points[j-1][0]/600))*4;
+    let x_end = Math.floor(255*(points[j][0]/600))*4;
+    currentColor = [r,g,b];
+
+      let step =  (x_end-x_start)/4;
+      let stepR = (points[j][2][0]-points[j-1][2][0])/step; // R
+      let stepG = (points[j][2][1]-points[j-1][2][1])/step; // G
+      let stepB = (points[j][2][2]-points[j-1][2][2])/step; // B
+      let inc_color = 0;
+
+    for(let i = x_start; i <= x_end; i += 4)
     {
-      if(i % 4 == 0){pos = 0;}
-      if(i % 4 == 1){pos = 3;}
-      if(i % 4 == 2){pos = 2;}
-      if(i % 4 == 3){pos = 1;}
+          data[i] = points[j-1][2][0] + inc_color * stepR; // R
+          data[i + 1] = points[j-1][2][1] + inc_color * stepG; // G
+          data[i + 2] = points[j-1][2][2] + inc_color * stepB; // B
 
-      data[pos + i] = r*i/Math.floor(xval_next*xstep); // R
-      data[pos + i + 1] = g*i/ Math.floor(xval_next*xstep); // G
-      data[pos + i + 2] = b*i/ Math.floor(xval_next*xstep); // B
-
-      console.log(data[pos + i], data[pos + i + 1], data[pos + i + 2] );
+          inc_color++;
 
       if(yval < yval_next) // Om nästa punkt har högre yvärde
       {
-        data[pos + i + 3] = k * ystep; // Alpha
+        data[i + 3] = k * ystep; // Alpha
         k += inc;
       }
-      else if(yval > yval_next) // Om nästa punkt har lägre
-      {
-        data[pos + i + 3] = k * ystep;
+      else if(yval > yval_next)
+      { // Om nästa punkt har lägre
+        data[i + 3] = k * ystep;
         k -= inc;
       }
-      else // Om de har samma y-värde
-      {
-        data[pos + i + 3] = k * ystep;
-      }
+      else{
+        data[i + 3] = k * ystep;
+      } // Om de har samma y-värde
     }
-  }
-
+    }
 
   /// End of the provided transfer function
   ////////////////////////////////////////////////////////////////////////////////////////
@@ -92,7 +82,13 @@ function updateTransferFunction(gl, transferFunction) {
   gl.bindTexture(gl.TEXTURE_2D, transferFunction);
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 256, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, data);
 }
+}
 
+function createNewPoint(p)
+{
+  let newPoint = point(points[p][0], points[p][1]);
+  stroke(r,g,b);
+}
 
 //==========================Create the canvas========================
 function setup() {
@@ -107,14 +103,17 @@ function setup() {
   line(width, height, -width, height);
 
 
-//===================Create the input/button canvas=========================
-// create canvas
+//===================Create the input/button =========================
 input = createInput();
 input.position(800, 450);
 
+start_point = createInput();
+start_point.position(800, 480);
+start_point.size(25, 20);
+
 button = createButton('submit');
 button.position(input.x + input.width, 450);
-button.mousePressed(greet);
+button.mousePressed(colorChange);
 
 //greeting = createElement('h2', 'what is your name?');
 //greeting.position(600, 440);
@@ -123,21 +122,13 @@ button.mousePressed(greet);
 //textSize(50);
 }
 
-function greet() {
 
-  let color_ = input.value().split(" ");
-  r = color_[0];
-  g = color_[1];
-  b = color_[2];
 
-  triggerTransferFunctionUpdate();
-  console.log(r,g,b);
-
-}
 function keyPressed(){
-  if(keyCode === ENTER){greet();}
+  if(keyCode === ENTER){colorChange();}
   if(keyCode === ESCAPE){resetCanvas();}
 }
+
 function resetCanvas(){
   points = [];
   clicks = 0;
@@ -150,15 +141,20 @@ function resetCanvas(){
   strokeWeight(2);
   line(0, width, 0, 0);
   line(width, height, -width, height);
+  data = new Uint8Array(256 * 4);
   triggerTransferFunctionUpdate();
+
+
 }
 
 //========================================On click function==============
 function mouseClicked() {
 
+if(mouseX <= 600 && mouseY <= 400)
+{
   if(clicks == 0) // Sätta ut första punkten
   {
-    updateline(mouseX,mouseY);
+    updateline(mouseX,mouseY, [0,0,0]);
   }
 
   for( let i = 0; i < points.length; i++) //Kolla om punkten redan finns
@@ -167,14 +163,12 @@ function mouseClicked() {
     {
       if(clicks != 0)
       {
-        console.log("Du clicka på samma punkt!");
-        //Göra något eftersom vi klickat på samma punkt
-        break;
+        break; // Du klicka på samma punkt.
       }
     }
     if(i == points.length-1) //Om inte, lägg in punkten
     {
-      updateline(mouseX,mouseY);
+      updateline(mouseX,mouseY, [0,0,0]);
       triggerTransferFunctionUpdate();
       break;
     }
@@ -183,9 +177,27 @@ function mouseClicked() {
   clicks++;
 }
 
-function mouseDragged() {
-
 }
+
+function colorChange() {
+
+  let color_ = input.value().split(" ");
+  r = +color_[0];
+  g = +color_[1];
+  b = +color_[2];
+
+  let i = start_point.value();
+
+if(i < points.length)
+{
+  points[i][2][0] = r; // R
+  points[i][2][1] = g; // G
+  points[i][2][2] = b; // B
+  createNewPoint(i);
+}
+  triggerTransferFunctionUpdate();
+}
+
 
 //========================================updateline ==============
 function updateline(x_Chord,y_Chord,c){
@@ -198,12 +210,12 @@ function updateline(x_Chord,y_Chord,c){
           });
 
           if (clicks == 0){
-            stroke(255,0,0);
+            stroke(0,0,0);
             noSmooth();
-            strokeWeight(6);
+            strokeWeight(2);
             line(points[0][0],400,points[0][0],points[0][1]);
             line(points[0][0],points[0][1],points[0][0],400);
-            stroke('purple');
+            stroke('white');
             strokeWeight(10);
 
             point(points[0][0],points[0][1]);
@@ -217,26 +229,26 @@ function updateline(x_Chord,y_Chord,c){
             strokeWeight(2);
             line(0, width, 0, 0);
             line(width, height, -width, height);
-            stroke(255,0,0);
+            stroke(0,0,0);
             noSmooth();
-            strokeWeight(6);
+            strokeWeight(2);
             line(points[0][0],400,points[0][0],points[0][1]);
 
             for (let i = 0; i < points.length-1; i++) {
-              stroke(255,0,0);
+              stroke(0,0,0);
               noSmooth();
-              strokeWeight(6);
+              strokeWeight(2);
               let k1 = line(points[i][0], points[i][1], points[i+1][0],points[i+1][1]);
-              stroke('purple');
+              stroke('white');
               strokeWeight(10);
               let k2 = point(points[i][0], points[i][1]);
 
             }
-            stroke(255,0,0);
+            stroke(0,0,0);
             noSmooth();
-            strokeWeight(6);
+            strokeWeight(2);
             line(points[points.length-1][0],points[points.length-1][1], points[points.length-1][0],400);
-            stroke('purple');
+            stroke('white');
             strokeWeight(10);
             let k2 = point(points[points.length-1][0],points[points.length-1][1]);
 
