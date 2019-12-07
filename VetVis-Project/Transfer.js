@@ -9,7 +9,7 @@ let r = 0;
 let g = 0;
 let b = 0;
 
-let input, button, greeting, reset, start_point, rgb_text, point_text;
+let input, button, greeting, reset, start_point, rgb_text, point_text, density, opacity;
 let data = new Uint8Array(256 * 4);
 let currentColor = [0,0,0];
 
@@ -127,6 +127,8 @@ point_text.position(830, 460);
 textAlign(CENTER);
 textSize(50);
 
+updateText();
+
 
 }
 
@@ -151,6 +153,7 @@ function resetCanvas(){
   line(width, height, -width, height);
   data = new Uint8Array(256 * 4);
   triggerTransferFunctionUpdate();
+    updateText();
 
 
 }
@@ -231,6 +234,7 @@ function updateline(x_Chord,y_Chord,c){
           }
           if (clicks  >= 1) { //clears the canvas
             clear();
+
             let cnv = createCanvas(600, 400);
             cnv.position(655, 15);
             background(153);
@@ -242,6 +246,7 @@ function updateline(x_Chord,y_Chord,c){
             noSmooth();
             strokeWeight(1);
             line(points[0][0],400,points[0][0],points[0][1]);
+            updateText();
 
             for (let i = 0; i < points.length-1; i++) {
               stroke(0,0,0);
@@ -272,4 +277,17 @@ function updatePoint()
     strokeWeight(10);
     let myPoint = point(points[i][0], points[i][1]);
   }
+}
+
+function updateText()
+{
+  density = createElement('h5', 'Density');
+  density.position(600 + 600, 370);
+  textAlign(CENTER);
+  textSize(50);
+
+  opacity = createElement('h5', 'Opacity');
+  opacity.position(600 + 60, 0);
+  textAlign(CENTER);
+  textSize(50);
 }
