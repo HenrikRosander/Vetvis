@@ -9,7 +9,7 @@ let r = 0;
 let g = 0;
 let b = 0;
 
-let input, button, greeting, reset, start_point;
+let input, button, greeting, reset, start_point, rgb_text, point_text;
 let data = new Uint8Array(256 * 4);
 let currentColor = [0,0,0];
 
@@ -106,20 +106,28 @@ function setup() {
 //===================Create the input/button =========================
 input = createInput();
 input.position(800, 450);
+input.size(80,20)
 
 start_point = createInput();
 start_point.position(800, 480);
 start_point.size(25, 20);
 
-button = createButton('submit');
+button = createButton('Change color');
 button.position(input.x + input.width, 450);
 button.mousePressed(colorChange);
 
-//greeting = createElement('h2', 'what is your name?');
-//greeting.position(600, 440);
 
-//textAlign(CENTER);
-//textSize(50);
+rgb_text = createElement('h5', 'Type in your RGB value (ex: 255 155 5)');
+rgb_text.position(800, 410);
+textAlign(CENTER);
+textSize(50);
+
+point_text = createElement('h5', 'Insert the point to be changed (ex: 1)');
+point_text.position(830, 460);
+textAlign(CENTER);
+textSize(50);
+
+
 }
 
 
@@ -193,9 +201,10 @@ if(i < points.length)
   points[i][2][0] = r; // R
   points[i][2][1] = g; // G
   points[i][2][2] = b; // B
-  createNewPoint(i);
-}
   triggerTransferFunctionUpdate();
+  updatePoint();
+}
+
 }
 
 
@@ -212,10 +221,10 @@ function updateline(x_Chord,y_Chord,c){
           if (clicks == 0){
             stroke(0,0,0);
             noSmooth();
-            strokeWeight(2);
+            strokeWeight(1);
             line(points[0][0],400,points[0][0],points[0][1]);
             line(points[0][0],points[0][1],points[0][0],400);
-            stroke('white');
+            stroke(points[0][2]);
             strokeWeight(10);
 
             point(points[0][0],points[0][1]);
@@ -226,36 +235,41 @@ function updateline(x_Chord,y_Chord,c){
             cnv.position(655, 15);
             background(153);
             stroke('black');
-            strokeWeight(2);
+            strokeWeight(1);
             line(0, width, 0, 0);
             line(width, height, -width, height);
             stroke(0,0,0);
             noSmooth();
-            strokeWeight(2);
+            strokeWeight(1);
             line(points[0][0],400,points[0][0],points[0][1]);
 
             for (let i = 0; i < points.length-1; i++) {
               stroke(0,0,0);
               noSmooth();
-              strokeWeight(2);
+              strokeWeight(1);
               let k1 = line(points[i][0], points[i][1], points[i+1][0],points[i+1][1]);
-              stroke('white');
+              stroke(points[i][2]);
               strokeWeight(10);
               let k2 = point(points[i][0], points[i][1]);
 
             }
             stroke(0,0,0);
             noSmooth();
-            strokeWeight(2);
+            strokeWeight(1);
             line(points[points.length-1][0],points[points.length-1][1], points[points.length-1][0],400);
-            stroke('white');
+            stroke(points[points.length-1][2]);
             strokeWeight(10);
             let k2 = point(points[points.length-1][0],points[points.length-1][1]);
-
-
-              // div2 = createDiv(line(0,0,dummy[0],dummy[1]), line(dummy[0],dummy[1], dummy[2],dummy[3]),line(dummy[2],dummy[3], dummy[4],dummy[5]),line( dummy[4],dummy[5], 600,0));
-              // div2.remove();
             }
-
           }
+}
+
+function updatePoint()
+{
+  for (let i = 0; i < points.length; i++)
+  {
+    stroke(points[i][2]);
+    strokeWeight(10);
+    let myPoint = point(points[i][0], points[i][1]);
+  }
 }
