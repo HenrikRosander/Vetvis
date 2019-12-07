@@ -11,7 +11,6 @@ let b = 0;
 
 let input, button, greeting, reset, start_point, rgb_text, point_text, density, opacity;
 let data = new Uint8Array(256 * 4);
-let currentColor = [0,0,0];
 
 function updateTransferFunction(gl, transferFunction) {
 
@@ -27,25 +26,14 @@ if(start_point.value() <= points.length)
     let inc = Math.abs(yval-yval_next)/Math.floor(255/600*(xval_next-xval)); // hur mycket y ska incrementeras (beror på lutningen)
     let pos = 0;
 
-    // let x_start = Math.floor(xval*xstep);
-    // let x_end = Math.floor(xval_next*xstep);
-    //let last_point = Math.floor(points[points.length-1][0] * xstep);
-    //
-    // if(x_start % 4 == 0){pos = 0;} // För att kompensera på vart man börjar
-    // if(x_start % 4 == 1){pos = 3;}
-    // if(x_start % 4 == 2){pos = 2;}
-    // if(x_start % 4 == 3){pos = 1;}
-
-
     let x_start = Math.floor(255*(points[j-1][0]/600))*4;
     let x_end = Math.floor(255*(points[j][0]/600))*4;
-    currentColor = [r,g,b];
 
-      let step =  (x_end-x_start)/4;
-      let stepR = (points[j][2][0]-points[j-1][2][0])/step; // R
-      let stepG = (points[j][2][1]-points[j-1][2][1])/step; // G
-      let stepB = (points[j][2][2]-points[j-1][2][2])/step; // B
-      let inc_color = 0;
+    let step =  (x_end-x_start)/4;
+    let stepR = (points[j][2][0]-points[j-1][2][0])/step; // R
+    let stepG = (points[j][2][1]-points[j-1][2][1])/step; // G
+    let stepB = (points[j][2][2]-points[j-1][2][2])/step; // B
+    let inc_color = 0;
 
     for(let i = x_start; i <= x_end; i += 4)
     {
@@ -70,12 +58,6 @@ if(start_point.value() <= points.length)
       } // Om de har samma y-värde
     }
     }
-
-  /// End of the provided transfer function
-  ////////////////////////////////////////////////////////////////////////////////////////
-
-  // @TODO:  Replace the transfer function specification above with your own transfer
-  //         function editor result
 
   // Upload the new data to the texture
   console.log(117, "Updating the transfer function texture");
@@ -104,32 +86,30 @@ function setup() {
 
 
 //===================Create the input/button =========================
-input = createInput();
-input.position(800, 450);
-input.size(80,20)
+  input = createInput();
+  input.position(800, 450);
+  input.size(80,20)
 
-start_point = createInput();
-start_point.position(800, 480);
-start_point.size(25, 20);
+  start_point = createInput();
+  start_point.position(800, 480);
+  start_point.size(25, 20);
 
-button = createButton('Change color');
-button.position(input.x + input.width, 450);
-button.mousePressed(colorChange);
-
-
-rgb_text = createElement('h5', 'Type in your RGB value (ex: 255 155 5)');
-rgb_text.position(800, 410);
-textAlign(CENTER);
-textSize(50);
-
-point_text = createElement('h5', 'Insert the point to be changed (ex: 1)');
-point_text.position(830, 460);
-textAlign(CENTER);
-textSize(50);
-
-updateText();
+  button = createButton('Change color');
+  button.position(input.x + input.width, 450);
+  button.mousePressed(colorChange);
 
 
+  rgb_text = createElement('h5', 'Type in your RGB value (ex: 255 155 5)');
+  rgb_text.position(800, 410);
+  textAlign(CENTER);
+  textSize(50);
+
+  point_text = createElement('h5', 'Insert the point to be changed (ex: 1)');
+  point_text.position(830, 460);
+  textAlign(CENTER);
+  textSize(50);
+
+  updateText();
 }
 
 
@@ -153,7 +133,7 @@ function resetCanvas(){
   line(width, height, -width, height);
   data = new Uint8Array(256 * 4);
   triggerTransferFunctionUpdate();
-    updateText();
+  updateText();
 
 
 }
@@ -191,7 +171,6 @@ if(mouseX <= 600 && mouseY <= 400)
 }
 
 function colorChange() {
-
   let color_ = input.value().split(" ");
   r = +color_[0];
   g = +color_[1];
@@ -199,15 +178,14 @@ function colorChange() {
 
   let i = start_point.value();
 
-if(i < points.length)
-{
-  points[i][2][0] = r; // R
-  points[i][2][1] = g; // G
-  points[i][2][2] = b; // B
-  triggerTransferFunctionUpdate();
-  updatePoint();
-}
-
+  if(i < points.length)
+  {
+    points[i][2][0] = r; // R
+    points[i][2][1] = g; // G
+    points[i][2][2] = b; // B
+    triggerTransferFunctionUpdate();
+    updatePoint();
+  }
 }
 
 
